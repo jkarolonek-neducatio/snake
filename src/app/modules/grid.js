@@ -1,13 +1,14 @@
 class Grid {
-  constructor(canvas, tileRow, tileCol, tileSize) {
+  constructor(wrapper, canvas, tileRow, tileCol, tileSize) {
+    this.wrapper = wrapper;
     this.canvas = canvas;
     this.tileRow = tileRow;
     this.tileCol = tileCol;
     this.tileSize = tileSize;
     this.context = this.canvas.getContext('2d');
     this.direction = 'down';
-    this.bonus = false;
-    this.snake = [[10, 10], [11, 10], [12, 10], [13, 10], [14, 10]];
+    this.gameState = 'initial';
+    this.snake = [[5, 5], [6, 5], [7, 5], [8, 5], [9, 5]];
     this.update();
     window.addEventListener('keydown', this.keydownHandler);
   }
@@ -63,48 +64,56 @@ class Grid {
         directionRow = 1;
       }
       this.createGrid();
-      this.randomizeBonus();
       this.snake.unshift([this.snake[0][0] + directionCol, this.snake[0][1] + directionRow]);
       if (this.snake[0][0] !== this.bonusCol || this.snake[0][1] !== this.bonusRow) {
         this.snake.splice(-1, 1);
-      }
-      if (this.snake[0][0] === this.bonusCol && this.snake[0][1] === this.bonusRow) {
-        this.bonus = false;
-        this.context.beginPath();
+      } else {
         this.randomizeBonus();
       }
       for (let i = 1; i < this.snake.length; i += 1) {
         if (this.snake[0][0] === this.snake[i][0] && this.snake[0][1] === this.snake[i][1]) {
-          clearInterval(this.mainInterval);
+          this.stopGame();
         }
       }
       if (this.snake[0][0] < 0 || this.snake[0][0] > this.tileCol - 1 || this.snake[0][1] < 0 || this.snake[0][1] > this.tileRow - 1) {
         clearInterval(this.mainInterval);
+        this.stopGame();
       }
-      this.context.fill();
+
       for (let i = 0; i < this.snake.length; i += 1) {
+        this.context.beginPath();
         this.context.moveTo((this.snake[i][0] + 0.75) * this.tileSize, (this.snake[i][1] + 0.5) * this.tileSize);
         this.context.arc((this.snake[i][0] + 0.5) * this.tileSize, (this.snake[i][1] + 0.5) * this.tileSize, this.tileSize / 4, 0, 2 * Math.PI);
         this.context.stroke();
       }
+      this.context.beginPath();
+      this.context.arc((this.bonusCol + 0.50) * this.tileSize, (this.bonusRow + 0.5) * this.tileSize, this.tileSize / 4, 0, 2 * Math.PI);
+      this.context.fill();
     }, 200);
+    this.randomizeBonus();
   }
 
   randomizeBonus() {
-    let isBonusOkay = true;
+    let isBonusOkay;
     do {
-      if (this.bonus === false) {
-        this.bonusCol = (Math.floor(Math.random() * (this.tileCol)));
-        this.bonusRow = (Math.floor(Math.random() * (this.tileRow)));
-        for (let i = 0; i < this.snake.length; i += 1) {
-          if (this.bonusCol === this.snake[i][0] && this.bonusRow === this.snake[i][1]) {
-            isBonusOkay = false;
-          }
+      isBonusOkay = true;
+      this.bonusCol = (Math.floor(Math.random() * (this.tileCol)));
+      this.bonusRow = (Math.floor(Math.random() * (this.tileRow)));
+      for (let i = 0; i < this.snake.length; i += 1) {
+        if (this.bonusCol === this.snake[i][0] && this.bonusRow === this.snake[i][1]) {
+          isBonusOkay = false;
         }
-        this.bonus = true;
       }
     } while (isBonusOkay === false);
-    this.context.arc((this.bonusCol + 0.50) * this.tileSize, (this.bonusRow + 0.5) * this.tileSize, this.tileSize / 4, 0, 2 * Math.PI);
+  }
+
+  stopGame() {
+    clearInterval(this.mainInterval);
+    this.gameState = 'lost';
+    if (this.gameState === 'lost') {
+      this.wrapper.classList.add('game-over');
+    }
+    window.removeEventListener('keydown', this.keydownHandler);
   }
 }
 
