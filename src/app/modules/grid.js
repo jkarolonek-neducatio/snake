@@ -17,19 +17,27 @@ class Grid {
     switch (event.keyCode) {
       case 65:
       case 37:
-        this.direction = 'left';
+        if (this.direction !== 'right') {
+          this.direction = 'left';
+        }
         break;
       case 87:
       case 38:
-        this.direction = 'up';
+        if (this.direction !== 'down') {
+          this.direction = 'up';
+        }
         break;
       case 68:
       case 39:
-        this.direction = 'right';
+        if (this.direction !== 'left') {
+          this.direction = 'right';
+        }
         break;
       case 83:
       case 40:
-        this.direction = 'down';
+        if (this.direction !== 'up') {
+          this.direction = 'down';
+        }
         break;
       default:
         break;

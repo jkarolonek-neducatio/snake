@@ -16,5 +16,4 @@ document.addEventListener('DOMContentLoaded', (event) => {
     grid.wrapper.classList.remove('game-over');
     grid = new Grid(wrapper, snakeBoard, tileX, tileY, tileSize);
   });
-
 });
