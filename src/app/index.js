@@ -1,7 +1,7 @@
 import '../style/app.scss';
 import Grid from './modules/grid';
 
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', () => {
   const wrapper = document.getElementsByClassName('wrapper')[0];
   const snakeBoard = document.getElementById('snake-board');
   const restartBtn = document.getElementsByClassName('restart-btn')[0];

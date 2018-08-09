@@ -14,30 +14,23 @@ class Grid {
   }
 
   keydownHandler = (event) => {
+    this.lastKeypress = null;
     switch (event.keyCode) {
       case 65:
       case 37:
-        if (this.direction !== 'right') {
-          this.direction = 'left';
-        }
+        this.lastKeypress = 'left';
         break;
       case 87:
       case 38:
-        if (this.direction !== 'down') {
-          this.direction = 'up';
-        }
+        this.lastKeypress = 'up';
         break;
       case 68:
       case 39:
-        if (this.direction !== 'left') {
-          this.direction = 'right';
-        }
+        this.lastKeypress = 'right';
         break;
       case 83:
       case 40:
-        if (this.direction !== 'up') {
-          this.direction = 'down';
-        }
+        this.lastKeypress = 'down';
         break;
       default:
         break;
@@ -58,6 +51,7 @@ class Grid {
     this.mainInterval = setInterval(() => {
       let directionCol = -1;
       let directionRow = 0;
+
       if (this.direction === 'left') {
         directionCol = -1;
         directionRow = 0;
@@ -71,6 +65,20 @@ class Grid {
         directionCol = 0;
         directionRow = 1;
       }
+
+      if (this.direction !== 'left' && this.lastKeypress === 'right') {
+        this.direction = this.lastKeypress;
+      }
+      if (this.direction !== 'right' && this.lastKeypress === 'left') {
+        this.direction = this.lastKeypress;
+      }
+      if (this.direction !== 'up' && this.lastKeypress === 'down') {
+        this.direction = this.lastKeypress;
+      }
+      if (this.direction !== 'down' && this.lastKeypress === 'up') {
+        this.direction = this.lastKeypress;
+      }
+
       this.createGrid();
       this.snake.unshift([this.snake[0][0] + directionCol, this.snake[0][1] + directionRow]);
       if (this.snake[0][0] !== this.bonusCol || this.snake[0][1] !== this.bonusRow) {
@@ -84,7 +92,6 @@ class Grid {
         }
       }
       if (this.snake[0][0] < 0 || this.snake[0][0] > this.tileCol - 1 || this.snake[0][1] < 0 || this.snake[0][1] > this.tileRow - 1) {
-        clearInterval(this.mainInterval);
         this.stopGame();
       }
 
